@@ -1,0 +1,29 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form">
+
+    <link rel="stylesheet" href="${rootURL}/plugin/lark-notice/css/ui.css" type="text/css"/>
+
+    <div class="robot-config-container">
+        <f:entry title="ID" field="id">
+            <f:textbox/>
+        </f:entry>
+        <f:entry title="Endpoint" field="endpoint">
+            <f:textbox/>
+        </f:entry>
+        <f:entry title="Bucket" field="bucket">
+            <f:textbox/>
+        </f:entry>
+        <f:entry title="Access Key" field="accessKey">
+            <f:textbox/>
+        </f:entry>
+        <f:entry title="Secret Key" field="secretKey">
+            <f:password/>
+        </f:entry>
+        <f:entry title="Base Prefix" field="basePrefix">
+            <f:textbox/>
+        </f:entry>
+        <f:validateButton
+                title="Validate" progress="Validating..."
+                method="test" with="endpoint,bucket,accessKey,secretKey,basePrefix"/>
+    </div>
+</j:jelly>

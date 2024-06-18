@@ -1,0 +1,16 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout"
+         xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+    <f:entry title="OSS Config id" field="ossId">
+        <f:textbox/>
+    </f:entry>
+    <f:entry title="Bucket Path" field="path">
+        <f:textbox/>
+    </f:entry>
+    <f:entry title="Local Location" field="location">
+        <f:textbox/>
+    </f:entry>
+    <f:entry title="Overwrite" field="force">
+        <f:checkbox default="true"/>
+    </f:entry>
+</j:jelly>
