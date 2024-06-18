@@ -6,9 +6,7 @@ import com.aliyun.oss.common.auth.DefaultCredentialProvider;
 import com.aliyun.oss.model.ObjectMetadata;
 import hudson.FilePath;
 import io.jenkins.plugins.aliyunoss.config.AliyunOSSConfig;
-
 import java.io.InputStream;
-
 import org.apache.commons.lang.StringUtils;
 
 /**
@@ -17,8 +15,7 @@ import org.apache.commons.lang.StringUtils;
  */
 public class AliyunOSSClient {
 
-    private AliyunOSSClient() {
-    }
+    private AliyunOSSClient() {}
 
     public static OSSClient getClient(String endpoint, String accessKey, String secretKey, String bucket)
             throws AliyunOSSException {

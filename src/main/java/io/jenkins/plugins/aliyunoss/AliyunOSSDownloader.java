@@ -23,7 +23,6 @@ import io.jenkins.plugins.aliyunoss.utils.AliyunOSSClient;
 import io.jenkins.plugins.aliyunoss.utils.AliyunOSSException;
 import io.jenkins.plugins.aliyunoss.utils.Logger;
 import io.jenkins.plugins.aliyunoss.utils.Utils;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -31,7 +30,6 @@ import java.io.InputStream;
 import java.util.Objects;
 import java.util.Optional;
 import javax.servlet.ServletException;
-
 import jenkins.MasterToSlaveFileCallable;
 import jenkins.tasks.SimpleBuildStep;
 import lombok.Getter;
@@ -228,6 +226,5 @@ public class AliyunOSSDownloader extends Builder implements SimpleBuildStep {
             }
             return FormValidation.ok();
         }
-
     }
 }

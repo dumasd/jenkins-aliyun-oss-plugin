@@ -15,5 +15,4 @@ class UtilsTest {
         String path = Utils.splicePath(null, "test", "1/", null, "cc/", "", "ff/");
         log.info(path);
     }
-
 }

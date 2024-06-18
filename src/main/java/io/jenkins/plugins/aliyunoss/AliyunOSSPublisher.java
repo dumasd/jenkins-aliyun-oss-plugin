@@ -18,12 +18,10 @@ import io.jenkins.plugins.aliyunoss.config.AliyunOSSGlobalConfig;
 import io.jenkins.plugins.aliyunoss.utils.AliyunOSSClient;
 import io.jenkins.plugins.aliyunoss.utils.AliyunOSSException;
 import io.jenkins.plugins.aliyunoss.utils.Logger;
-
+import io.jenkins.plugins.aliyunoss.utils.Utils;
 import java.io.IOException;
 import java.util.Optional;
 import javax.servlet.ServletException;
-
-import io.jenkins.plugins.aliyunoss.utils.Utils;
 import jenkins.tasks.SimpleBuildStep;
 import lombok.Getter;
 import lombok.Setter;
