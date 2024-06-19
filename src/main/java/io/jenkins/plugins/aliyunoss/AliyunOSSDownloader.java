@@ -96,8 +96,10 @@ public class AliyunOSSDownloader extends Builder implements SimpleBuildStep {
             return;
         }
         AliyunOSSConfig ossConfig = ossConfigOp.get();
-        String locationFp = env.expand(location);
-        final FilePath target = workspace.child(locationFp);
+        FilePath target = workspace;
+        if (Utils.isNotEmpty(location)) {
+            target = workspace.child(env.expand(location));
+        }
         if (target.exists()) {
             if (force) {
                 if (target.isDirectory()) {
