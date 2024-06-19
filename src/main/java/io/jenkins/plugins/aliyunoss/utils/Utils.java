@@ -6,6 +6,10 @@ public class Utils {
         return name == null || name.matches("\\s*");
     }
 
+    public static boolean isNotEmpty(final String name) {
+        return !isNullOrEmpty(name);
+    }
+
     public static String getFileName(String path) {
         if (isNullOrEmpty(path)) {
             return "";

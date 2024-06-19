@@ -1,3 +1,11 @@
-<div>
-    This is the path prefix inside the bucket to use.
+<div>You can set the prefix of the object key and support the use of Jenkins environment variables
+    such as: "${JOB_NAME}/${BUILD_NUMBER}/"<br/>
+    It can't begin with '/' and must end with '/'<br/>
+    Assume the job name is 'foo/bar'. The settings are as follows:<br/>
+
+    1. OSS Config Base Prefix: jenkins/<br/>
+    2. Path Prefix: ${JOB_NAME}/${BUILD_NUMBER}/<br/>
+    3. Uploading Artifacts: hello.txt,hello1.txt<br/>
+
+    Then the OSS key of 'hello.txt' will be: jenkins/foo/bar/5/hello.txt<br/>
 </div>

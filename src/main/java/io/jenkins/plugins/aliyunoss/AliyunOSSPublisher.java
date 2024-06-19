@@ -17,6 +17,7 @@ import io.jenkins.plugins.aliyunoss.config.AliyunOSSConfig;
 import io.jenkins.plugins.aliyunoss.config.AliyunOSSGlobalConfig;
 import io.jenkins.plugins.aliyunoss.utils.AliyunOSSClient;
 import io.jenkins.plugins.aliyunoss.utils.AliyunOSSException;
+import io.jenkins.plugins.aliyunoss.utils.Constants;
 import io.jenkins.plugins.aliyunoss.utils.Logger;
 import io.jenkins.plugins.aliyunoss.utils.Utils;
 import java.io.IOException;
@@ -80,15 +81,12 @@ public class AliyunOSSPublisher extends Recorder implements SimpleBuildStep {
             return;
         }
         AliyunOSSConfig ossConfig = ossConfigOp.get();
-        String includesFp = env.expand(includes);
-        includesFp = StringUtils.trim(includesFp);
-        String excludesFp = env.expand(excludes);
-        excludesFp = StringUtils.trim(excludesFp);
-        String jobName = run.getParent().getFullName();
-        int buildId = run.getNumber();
-        String ossPath = Utils.splicePath(ossConfig.getBasePrefix(), jobName, String.valueOf(buildId), pathPrefix);
+        String includesEx = StringUtils.trim(env.expand(includes));
+        String excludesEx = StringUtils.trim(env.expand(excludes));
+        String pathPrefixEx = StringUtils.trim(env.expand(pathPrefix));
+        String ossPath = Utils.splicePath(ossConfig.getBasePrefix(), pathPrefixEx);
         try {
-            AliyunOSSClient.upload(logger, workspace, ossConfig, includesFp, excludesFp, ossPath);
+            AliyunOSSClient.upload(logger, workspace, ossConfig, includesEx, excludesEx, ossPath);
         } catch (AliyunOSSException e) {
             e.printStackTrace(logger.getStream());
             logger.log("Upload to aliyun oss fail, the error message is:");
@@ -128,6 +126,20 @@ public class AliyunOSSPublisher extends Recorder implements SimpleBuildStep {
                 throws IOException, ServletException {
             if (StringUtils.isBlank(includes)) {
                 return FormValidation.error("Please set includes");
+            }
+            return FormValidation.ok();
+        }
+
+        @POST
+        public FormValidation doCheckPathPrefix(@QueryParameter("pathPrefix") String pathPrefix)
+                throws IOException, ServletException {
+            if (Utils.isNotEmpty(pathPrefix)) {
+                if (StringUtils.indexOf(pathPrefix, Constants.SLASH) == 0) {
+                    return FormValidation.error("Base Prefix can't begin with '/'");
+                }
+                if (!pathPrefix.endsWith(Constants.SLASH)) {
+                    return FormValidation.error("Base Prefix must end with '/'");
+                }
             }
             return FormValidation.ok();
         }

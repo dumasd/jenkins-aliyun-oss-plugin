@@ -4,6 +4,7 @@ import hudson.Extension;
 import hudson.model.Descriptor;
 import hudson.model.ManagementLink;
 import hudson.util.FormApply;
+import io.jenkins.plugins.aliyunoss.Messages;
 import java.io.IOException;
 import javax.servlet.ServletException;
 import jenkins.model.Jenkins;
@@ -20,7 +21,7 @@ public class AliyunOSSManagementLink extends ManagementLink {
 
     @Override
     public String getDisplayName() {
-        return "Aliyun OSS";
+        return Messages.plugin_display_name();
     }
 
     @Override
@@ -30,7 +31,7 @@ public class AliyunOSSManagementLink extends ManagementLink {
 
     @Override
     public String getDescription() {
-        return "Aliyun OSS plugin";
+        return Messages.plugin_management_description();
     }
 
     @POST
