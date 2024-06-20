@@ -3,6 +3,7 @@ package io.jenkins.plugins.aliyunoss.config;
 import hudson.Extension;
 import hudson.model.Describable;
 import hudson.model.Descriptor;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -17,11 +18,13 @@ import org.kohsuke.stapler.StaplerRequest;
 @Setter
 @Extension
 public class AliyunOSSGlobalConfig extends Descriptor<AliyunOSSGlobalConfig>
-        implements Describable<AliyunOSSGlobalConfig> {
+        implements Describable<AliyunOSSGlobalConfig>, Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private List<AliyunOSSConfig> configs = new ArrayList<>();
 
-    public AliyunOSSGlobalConfig(ArrayList<AliyunOSSConfig> configs) {
+    public AliyunOSSGlobalConfig(List<AliyunOSSConfig> configs) {
         this.configs = configs;
     }
 

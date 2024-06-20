@@ -113,25 +113,26 @@ public class AliyunOSSDownloader extends Builder implements SimpleBuildStep {
             }
         }
         String ossPath = Utils.splicePath(ossConfig.getBasePrefix(), env.expand(path));
-        target.act(new RemoteDownloader(logger, ossConfig, ossPath));
+        target.act(new RemoteDownloader(listener, ossConfig, ossPath));
     }
 
     private static class RemoteDownloader extends MasterToSlaveFileCallable<Void> {
 
         private static final long serialVersionUID = 1L;
 
-        private final transient Logger logger;
-        private final transient AliyunOSSConfig ossConfig;
+        private final TaskListener taskListener;
+        private final AliyunOSSConfig ossConfig;
         private final String path;
 
-        private RemoteDownloader(Logger logger, AliyunOSSConfig ossConfig, String path) {
-            this.logger = logger;
+        private RemoteDownloader(TaskListener taskListener, AliyunOSSConfig ossConfig, String path) {
+            this.taskListener = taskListener;
             this.ossConfig = ossConfig;
             this.path = path;
         }
 
         @Override
         public Void invoke(File f, VirtualChannel channel) throws IOException, InterruptedException {
+            Logger logger = new Logger(taskListener);
             logger.log(
                     "Downloading from aliyun oss. endpoint: %s, bucket: %s, path: %s",
                     ossConfig.getEndpoint(), ossConfig.getBucket(), path);

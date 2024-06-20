@@ -8,6 +8,7 @@ import hudson.util.Secret;
 import io.jenkins.plugins.aliyunoss.utils.AliyunOSSClient;
 import io.jenkins.plugins.aliyunoss.utils.Constants;
 import io.jenkins.plugins.aliyunoss.utils.Utils;
+import java.io.Serializable;
 import java.util.UUID;
 import jenkins.model.Jenkins;
 import lombok.Getter;
@@ -22,7 +23,9 @@ import org.kohsuke.stapler.QueryParameter;
 @Getter
 @ToString
 @NoArgsConstructor
-public class AliyunOSSConfig implements Describable<AliyunOSSConfig> {
+public class AliyunOSSConfig implements Serializable, Describable<AliyunOSSConfig> {
+
+    private static final long serialVersionUID = 1L;
 
     private String id;
     private String endpoint;
