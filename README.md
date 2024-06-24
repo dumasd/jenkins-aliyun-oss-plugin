@@ -104,7 +104,7 @@ pipeline {
     agent any
     
     environment {
-        CI_JOB_NAME = 'test'
+        CI_JOB_NAME = 'foo/bar'
         CI_BUILD_NUMBER = '5'
         aliyunOssId='wa-oss-bucket'
     }
@@ -113,7 +113,7 @@ pipeline {
         stage('Download') {
             steps {
                 ossDownload ossId: aliyunOssId, location: '${CI_JOB_NAME}/${CI_BUILD_NUMBER}/', path: 'test/', force: true
-                sh 'ls -hl'
+                sh 'ls -hl test'
             }
         }
     }
