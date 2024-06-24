@@ -80,12 +80,12 @@ pipeline {
 
 ### ossDownload
 
-| 参数     | 参数名称       | 参数解释                                  |
-| -------- | -------------- | ----------------------------------------- |
-| ossId    | OSS Config id  | 全局配置中的ID                            |
-| path     | Bucket Path    | OSS路径，不能以'/'开头                    |
-| location | Local Location | 本地的下载位置，不填默认在workspace根目录 |
-| force    | Ovewrite       | 是否强制覆盖之前的文件，默认为true        |
+| 参数     | 参数名称       | 参数解释                                     |
+| -------- | -------------- |------------------------------------------|
+| ossId    | OSS Config id  | 全局配置中的ID                                 |
+| path     | Bucket Path    | OSS路径，不能以'/'开头                           |
+| location | Local Location | 本地的下载位置，不填默认在workspace根目录，如果是文件夹必须以'/'结尾 |
+| force    | Ovewrite       | 是否强制覆盖之前的文件，默认为true                      |
 
 #### Freestyle 作业
 
