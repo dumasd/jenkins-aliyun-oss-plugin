@@ -13,8 +13,6 @@
 
 ### 全局配置
 
-在Jenkins系统管理 -> Aliyun OSS，配置OSS存储桶和访问凭证信息。
-
 | 参数       | 参数名称    | 参数解释                                                     |
 | ---------- | ----------- | ------------------------------------------------------------ |
 | id         | ID          | 配置ID，不指定uuid随机生成                                   |
@@ -23,6 +21,8 @@
 | accessKey  | Access Key  | 存储桶访问凭证-AK                                            |
 | secretKey  | Secret Key  | 存储桶访问凭证-SK                                            |
 | basePrefix | Base Prefix | 文件存储基准位置，开头不能有'/'，结尾必须有'/'。             |
+
+在Jenkins系统管理 -> Aliyun OSS，配置OSS存储桶和访问凭证信息。
 
 ![image-20240624163654629](images/image-20240624163654629.png)
 
