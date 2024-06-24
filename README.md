@@ -112,7 +112,7 @@ pipeline {
     stages {
         stage('Download') {
             steps {
-                ossDownload ossId: aliyunOssId, location: '${CI_JOB_NAME}/${CI_BUILD_NUMBER}/', path: 'test/', force: true
+                ossDownload ossId: aliyunOssId, path: '${CI_JOB_NAME}/${CI_BUILD_NUMBER}/', location: 'test/', force: true
                 sh 'ls -hl test'
             }
         }
