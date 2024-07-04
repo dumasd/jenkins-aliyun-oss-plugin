@@ -152,13 +152,21 @@ public class AliyunOSSDownloader extends Builder implements SimpleBuildStep {
                 ListObjectsV2Request listObjReq = new ListObjectsV2Request(ossConfig.getBucket(), path);
                 listObjReq.setMaxKeys(100);
                 ListObjectsV2Result listObjectResult = client.listObjectsV2(listObjReq);
-                if (listObjectResult.getKeyCount() > 100) {
-                    throw new IOException("OSS file count too much > 100, please check your path");
+                if (listObjectResult.getKeyCount() <= 0) {
+                    throw new IOException("No file found is oss");
+                }
+                if (f.isFile() && listObjectResult.getKeyCount() > 1) {
+                    throw new IOException("Workspace location is file but oss path file more then 1");
                 }
                 for (OSSObjectSummary summary : listObjectResult.getObjectSummaries()) {
-                    String savePath = Utils.removePrefix(listObjectResult.getPrefix(), summary.getKey());
                     OSSObject object = client.getObject(ossConfig.getBucket(), summary.getKey());
-                    File saveFile = new File(f, savePath);
+                    File saveFile;
+                    if (f.isFile()) {
+                        saveFile = f;
+                    } else {
+                        String savePath = Utils.removePrefix(listObjectResult.getPrefix(), summary.getKey());
+                        saveFile = new File(f, savePath);
+                    }
                     saveFile(saveFile, object);
                     logger.log(
                             "Downloaded file and saved. objectKey: %s, savePath: %s",
@@ -167,25 +175,24 @@ public class AliyunOSSDownloader extends Builder implements SimpleBuildStep {
             } else {
                 // 下载文件
                 OSSObject object = client.getObject(ossConfig.getBucket(), path);
-                File saveFile = f;
-                if (f.isDirectory()) {
+                File saveFile;
+                if (f.isFile()) {
+                    saveFile = f;
+                } else {
                     String fileName = Utils.getFileName(object.getKey());
                     saveFile = new File(f, fileName);
-                    logger.log(
-                            "Downloaded file and saved. objectKey: %s, savePath: %s",
-                            object.getKey(), saveFile.getPath());
                 }
                 saveFile(saveFile, object);
+                logger.log(
+                        "Downloaded file and saved. objectKey: %s, savePath: %s", object.getKey(), saveFile.getPath());
             }
             return null;
         }
 
         private void saveFile(File saveFile, OSSObject object) throws IOException {
             File parent = saveFile.getParentFile();
-            if (Objects.nonNull(parent) && !parent.exists()) {
-                if (!parent.mkdirs()) {
-                    throw new IOException("Make dir error");
-                }
+            if (Objects.nonNull(parent) && !parent.exists() && !parent.mkdirs()) {
+                throw new IOException("Make dir error");
             }
             FileOutputStream fos = new FileOutputStream(saveFile);
             try (InputStream is = object.getObjectContent()) {
