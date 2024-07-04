@@ -50,6 +50,9 @@ public class AliyunOSSClient {
         excludes = StringUtils.defaultIfEmpty(excludes, null);
         try {
             FilePath[] filePaths = workspace.list(includes, excludes);
+            if (filePaths.length == 0) {
+                throw new AliyunOSSException("No file to upload, please check your params");
+            }
             for (FilePath filePath : filePaths) {
                 try (InputStream is = filePath.read()) {
                     ObjectMetadata meta = new ObjectMetadata();
@@ -59,6 +62,9 @@ public class AliyunOSSClient {
                     logger.log("Uploaded file: %s, ossPath: %s", filePath.getName(), key);
                 }
             }
+        } catch (AliyunOSSException e) {
+            e.printStackTrace(logger.getStream());
+            throw e;
         } catch (Exception e) {
             e.printStackTrace(logger.getStream());
             throw new AliyunOSSException("List files error:" + e.getMessage());
