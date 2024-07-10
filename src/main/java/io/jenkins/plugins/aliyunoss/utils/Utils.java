@@ -1,5 +1,7 @@
 package io.jenkins.plugins.aliyunoss.utils;
 
+import java.io.File;
+
 public class Utils {
 
     public static boolean isNullOrEmpty(final String name) {
@@ -50,5 +52,15 @@ public class Utils {
             }
         }
         return builder.toString();
+    }
+
+    public static boolean isFile(String pathString) {
+        File file = new File(pathString);
+        // 检查路径是否存在
+        if (file.exists()) {
+            return file.isFile();
+        } else {
+            return !(pathString.endsWith("/") || pathString.endsWith("\\"));
+        }
     }
 }

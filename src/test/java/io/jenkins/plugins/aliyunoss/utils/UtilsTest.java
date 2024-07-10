@@ -14,5 +14,8 @@ class UtilsTest {
     void testSplicePath() {
         String path = Utils.splicePath(null, "test", "1/", null, "cc/", "", "ff/");
         log.info(path);
+
+        log.info("" + Utils.isFile("/opt/"));
+        log.info("" + Utils.isFile("/opt/ccc.tar.gz"));
     }
 }

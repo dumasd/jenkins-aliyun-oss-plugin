@@ -123,7 +123,7 @@ public class AliyunOSSDownloader extends Builder implements SimpleBuildStep {
             }
         }
         String ossPath = Utils.splicePath(ossConfig.getBasePrefix(), env.expand(path));
-        target.act(new RemoteDownloader(listener, ossConfig, ossPath, strict));
+        target.act(new RemoteDownloader(listener, ossConfig, ossPath, strict, location));
     }
 
     private static class RemoteDownloader extends MasterToSlaveFileCallable<Void> {
@@ -134,12 +134,15 @@ public class AliyunOSSDownloader extends Builder implements SimpleBuildStep {
         private final AliyunOSSConfig ossConfig;
         private final String path;
         private final boolean strict;
+        private final String location;
 
-        private RemoteDownloader(TaskListener taskListener, AliyunOSSConfig ossConfig, String path, boolean strict) {
+        private RemoteDownloader(
+                TaskListener taskListener, AliyunOSSConfig ossConfig, String path, boolean strict, String location) {
             this.taskListener = taskListener;
             this.ossConfig = ossConfig;
             this.path = path;
             this.strict = strict;
+            this.location = location;
         }
 
         @Override
@@ -187,7 +190,7 @@ public class AliyunOSSDownloader extends Builder implements SimpleBuildStep {
                 for (OSSObjectSummary summary : listObjectResult.getObjectSummaries()) {
                     OSSObject object = client.getObject(ossConfig.getBucket(), summary.getKey());
                     File saveFile;
-                    if (f.isFile()) {
+                    if (Utils.isFile(location)) {
                         saveFile = f;
                     } else {
                         String savePath = Utils.removePrefix(listObjectResult.getPrefix(), summary.getKey());
@@ -211,7 +214,7 @@ public class AliyunOSSDownloader extends Builder implements SimpleBuildStep {
                     return null;
                 }
                 File saveFile;
-                if (f.isFile()) {
+                if (Utils.isFile(location)) {
                     saveFile = f;
                 } else {
                     String fileName = Utils.getFileName(object.getKey());
