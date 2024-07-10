@@ -1,6 +1,7 @@
 package io.jenkins.plugins.aliyunoss;
 
 import com.aliyun.oss.OSSClient;
+import com.aliyun.oss.OSSException;
 import com.aliyun.oss.model.ListObjectsV2Request;
 import com.aliyun.oss.model.ListObjectsV2Result;
 import com.aliyun.oss.model.OSSObject;
@@ -64,6 +65,10 @@ public class AliyunOSSDownloader extends Builder implements SimpleBuildStep {
      * Overwrite existing file
      */
     private boolean force = true;
+    /**
+     * 是否严格模式，文件不存在作业失败
+     */
+    private boolean strict = true;
 
     @DataBoundConstructor
     public AliyunOSSDownloader(String ossId, String path) {
@@ -74,6 +79,11 @@ public class AliyunOSSDownloader extends Builder implements SimpleBuildStep {
     @DataBoundSetter
     public void setForce(boolean force) {
         this.force = force;
+    }
+
+    @DataBoundSetter
+    public void setStrict(boolean strict) {
+        this.strict = strict;
     }
 
     @DataBoundSetter
@@ -113,7 +123,7 @@ public class AliyunOSSDownloader extends Builder implements SimpleBuildStep {
             }
         }
         String ossPath = Utils.splicePath(ossConfig.getBasePrefix(), env.expand(path));
-        target.act(new RemoteDownloader(listener, ossConfig, ossPath));
+        target.act(new RemoteDownloader(listener, ossConfig, ossPath, strict));
     }
 
     private static class RemoteDownloader extends MasterToSlaveFileCallable<Void> {
@@ -123,11 +133,13 @@ public class AliyunOSSDownloader extends Builder implements SimpleBuildStep {
         private final TaskListener taskListener;
         private final AliyunOSSConfig ossConfig;
         private final String path;
+        private final boolean strict;
 
-        private RemoteDownloader(TaskListener taskListener, AliyunOSSConfig ossConfig, String path) {
+        private RemoteDownloader(TaskListener taskListener, AliyunOSSConfig ossConfig, String path, boolean strict) {
             this.taskListener = taskListener;
             this.ossConfig = ossConfig;
             this.path = path;
+            this.strict = strict;
         }
 
         @Override
@@ -149,11 +161,25 @@ public class AliyunOSSDownloader extends Builder implements SimpleBuildStep {
             }
             if (Objects.isNull(path) || path.endsWith("/")) {
                 // 文件夹下所有内容
-                ListObjectsV2Request listObjReq = new ListObjectsV2Request(ossConfig.getBucket(), path);
-                listObjReq.setMaxKeys(100);
-                ListObjectsV2Result listObjectResult = client.listObjectsV2(listObjReq);
+                ListObjectsV2Result listObjectResult;
+                try {
+                    ListObjectsV2Request listObjReq = new ListObjectsV2Request(ossConfig.getBucket(), path);
+                    listObjReq.setMaxKeys(100);
+                    listObjectResult = client.listObjectsV2(listObjReq);
+                } catch (OSSException e) {
+                    if (strict) {
+                        throw e;
+                    }
+                    logger.log("OSS error code: %s", e.getMessage());
+                    return null;
+                }
                 if (listObjectResult.getKeyCount() <= 0) {
-                    throw new IOException("No file found is oss");
+                    if (strict) {
+                        throw new IOException("No object found in oss.");
+                    } else {
+                        logger.log("No object found in oss");
+                        return null;
+                    }
                 }
                 if (f.isFile() && listObjectResult.getKeyCount() > 1) {
                     throw new IOException("Workspace location is file but oss path file more then 1");
@@ -174,7 +200,16 @@ public class AliyunOSSDownloader extends Builder implements SimpleBuildStep {
                 }
             } else {
                 // 下载文件
-                OSSObject object = client.getObject(ossConfig.getBucket(), path);
+                OSSObject object;
+                try {
+                    object = client.getObject(ossConfig.getBucket(), path);
+                } catch (OSSException e) {
+                    if (strict) {
+                        throw e;
+                    }
+                    logger.log("OSS error code: %s", e.getMessage());
+                    return null;
+                }
                 File saveFile;
                 if (f.isFile()) {
                     saveFile = f;
