@@ -107,8 +107,9 @@ public class AliyunOSSDownloader extends Builder implements SimpleBuildStep {
         }
         AliyunOSSConfig ossConfig = ossConfigOp.get();
         FilePath target = workspace;
+        String locationEx = env.expand(location);
         if (Utils.isNotEmpty(location)) {
-            target = workspace.child(env.expand(location));
+            target = workspace.child(locationEx);
         }
         if (target.exists()) {
             if (force) {
@@ -123,7 +124,7 @@ public class AliyunOSSDownloader extends Builder implements SimpleBuildStep {
             }
         }
         String ossPath = Utils.splicePath(ossConfig.getBasePrefix(), env.expand(path));
-        target.act(new RemoteDownloader(listener, ossConfig, ossPath, strict, location));
+        target.act(new RemoteDownloader(listener, ossConfig, ossPath, strict, locationEx));
     }
 
     private static class RemoteDownloader extends MasterToSlaveFileCallable<Void> {
@@ -134,23 +135,23 @@ public class AliyunOSSDownloader extends Builder implements SimpleBuildStep {
         private final AliyunOSSConfig ossConfig;
         private final String path;
         private final boolean strict;
-        private final String location;
+        private final String local;
 
         private RemoteDownloader(
-                TaskListener taskListener, AliyunOSSConfig ossConfig, String path, boolean strict, String location) {
+                TaskListener taskListener, AliyunOSSConfig ossConfig, String path, boolean strict, String local) {
             this.taskListener = taskListener;
             this.ossConfig = ossConfig;
             this.path = path;
             this.strict = strict;
-            this.location = location;
+            this.local = local;
         }
 
         @Override
         public Void invoke(File f, VirtualChannel channel) throws IOException, InterruptedException {
             Logger logger = new Logger(taskListener);
             logger.log(
-                    "Downloading from aliyun oss. endpoint: %s, bucket: %s, path: %s",
-                    ossConfig.getEndpoint(), ossConfig.getBucket(), path);
+                    "Downloading from aliyun oss. endpoint: %s, bucket: %s, path: %s, localPath: %s",
+                    ossConfig.getEndpoint(), ossConfig.getBucket(), path, local);
             OSSClient client;
             try {
                 client = AliyunOSSClient.getClient(
@@ -190,7 +191,7 @@ public class AliyunOSSDownloader extends Builder implements SimpleBuildStep {
                 for (OSSObjectSummary summary : listObjectResult.getObjectSummaries()) {
                     OSSObject object = client.getObject(ossConfig.getBucket(), summary.getKey());
                     File saveFile;
-                    if (Utils.isFile(location)) {
+                    if (Utils.isFile(local)) {
                         saveFile = f;
                     } else {
                         String savePath = Utils.removePrefix(listObjectResult.getPrefix(), summary.getKey());
@@ -214,7 +215,7 @@ public class AliyunOSSDownloader extends Builder implements SimpleBuildStep {
                     return null;
                 }
                 File saveFile;
-                if (Utils.isFile(location)) {
+                if (Utils.isFile(local)) {
                     saveFile = f;
                 } else {
                     String fileName = Utils.getFileName(object.getKey());
